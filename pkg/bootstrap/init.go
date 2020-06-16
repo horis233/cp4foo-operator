@@ -21,7 +21,10 @@ import (
 func InitResources(mgr manager.Manager) error {
 	client := mgr.GetClient()
 	reader := mgr.GetAPIReader()
-
+	err := updateConfigFromYaml([]byte(operandConfig), client, reader)
+	if err != nil {
+		klog.Error(err, "Update OperandConfig error")
+	}
 	timeout := time.After(300 * time.Second)
 	ticker := time.NewTicker(30 * time.Second)
 	for {
@@ -33,7 +36,7 @@ func InitResources(mgr manager.Manager) error {
 			// create OperandRequest
 			err := createOrUpdateFromYaml([]byte(operandRequest), client, reader)
 			if err != nil {
-				klog.Error(err, "create OperandConfig error")
+				klog.Error(err, "create OperandRequest error")
 			} else {
 				return nil
 			}
