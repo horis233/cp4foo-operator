@@ -1,0 +1,168 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: ClusterServiceVersion
+metadata:
+  annotations:
+    alm-examples: |-
+      [
+        {
+          "apiVersion": "operator.ibm.com/v1alpha1",
+          "kind": "Foo",
+          "metadata": {
+            "name": "example-foo"
+          },
+          "spec": {
+            "size": 3
+          }
+        }
+      ]
+    capabilities: Basic Install
+  name: cp4foo-operator.v0.0.1
+  namespace: placeholder
+spec:
+  apiservicedefinitions: {}
+  customresourcedefinitions:
+    owned:
+    - description: Foo is the Schema for the foos API
+      displayName: Foo
+      kind: Foo
+      name: foos.operator.ibm.com
+      version: v1alpha1
+    required:
+    - description: CommonService is the Schema for the commonservices API
+      displayName: CommonService
+      kind: CommonService
+      name: commonservices.operator.ibm.com
+      version: v3
+  description: Placeholder description
+  displayName: Cp4foo Operator
+  install:
+    spec:
+      deployments:
+      - name: cp4foo-operator
+        spec:
+          replicas: 1
+          selector:
+            matchLabels:
+              name: cp4foo-operator
+          strategy: {}
+          template:
+            metadata:
+              labels:
+                name: cp4foo-operator
+            spec:
+              containers:
+              - command:
+                - cp4foo-operator
+                env:
+                - name: WATCH_NAMESPACE
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.annotations['olm.targetNamespaces']
+                - name: POD_NAME
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.name
+                - name: OPERATOR_NAME
+                  value: cp4foo-operator
+                image: quay.io/horis233/cp4foo:0.0.1
+                imagePullPolicy: Always
+                name: cp4foo-operator
+                resources: {}
+              serviceAccountName: cp4foo-operator
+      permissions:
+      - rules:
+        - apiGroups:
+          - ""
+          resources:
+          - pods
+          - services
+          - services/finalizers
+          - endpoints
+          - persistentvolumeclaims
+          - events
+          - configmaps
+          - secrets
+          verbs:
+          - create
+          - delete
+          - get
+          - list
+          - patch
+          - update
+          - watch
+        - apiGroups:
+          - apps
+          resources:
+          - deployments
+          - daemonsets
+          - replicasets
+          - statefulsets
+          verbs:
+          - create
+          - delete
+          - get
+          - list
+          - patch
+          - update
+          - watch
+        - apiGroups:
+          - monitoring.coreos.com
+          resources:
+          - servicemonitors
+          verbs:
+          - get
+          - create
+        - apiGroups:
+          - apps
+          resourceNames:
+          - cp4foo-operator
+          resources:
+          - deployments/finalizers
+          verbs:
+          - update
+        - apiGroups:
+          - ""
+          resources:
+          - pods
+          verbs:
+          - get
+        - apiGroups:
+          - apps
+          resources:
+          - replicasets
+          - deployments
+          verbs:
+          - get
+        - apiGroups:
+          - operator.ibm.com
+          resources:
+          - '*'
+          verbs:
+          - create
+          - delete
+          - get
+          - list
+          - patch
+          - update
+          - watch
+        serviceAccountName: cp4foo-operator
+    strategy: deployment
+  installModes:
+  - supported: true
+    type: OwnNamespace
+  - supported: true
+    type: SingleNamespace
+  - supported: false
+    type: MultiNamespace
+  - supported: false
+    type: AllNamespaces
+  keywords:
+  - cp4foo
+  maintainers:
+  - email: zhiwei@cn.ibm.com
+    name: zhiwei
+  maturity: alpha
+  provider:
+    name: zhiwei
+  replaces: cp4foo-operator.v0.0.0
+  version: 0.0.1

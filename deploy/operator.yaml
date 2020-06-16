@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cp4foo-operator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: cp4foo-operator
+  template:
+    metadata:
+      labels:
+        name: cp4foo-operator
+    spec:
+      serviceAccountName: cp4foo-operator
+      containers:
+        - name: cp4foo-operator
+          image: quay.io/horis233/cp4foo:0.0.1
+          command:
+          - cp4foo-operator
+          imagePullPolicy: Always
+          env:
+            - name: WATCH_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: OPERATOR_NAME
+              value: "cp4foo-operator"
