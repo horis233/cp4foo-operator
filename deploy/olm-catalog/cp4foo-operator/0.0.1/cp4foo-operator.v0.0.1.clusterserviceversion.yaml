@@ -23,7 +23,6 @@ spec:
   customresourcedefinitions:
     owned:
     - description: Foo is the Schema for the foos API
-      displayName: Foo
       kind: Foo
       name: foos.operator.ibm.com
       version: v1alpha1
@@ -37,6 +36,21 @@ spec:
   displayName: Cp4foo Operator
   install:
     spec:
+      clusterPermissions:
+      - rules:
+        - apiGroups:
+          - operator.ibm.com
+          resources:
+          - '*'
+          verbs:
+          - create
+          - delete
+          - get
+          - list
+          - patch
+          - update
+          - watch
+        serviceAccountName: cp4foo-operator
       deployments:
       - name: cp4foo-operator
         spec:

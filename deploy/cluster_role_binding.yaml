@@ -1,0 +1,12 @@
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: cp4foo-operator
+subjects:
+  - kind: ServiceAccount
+    name: cp4foo-operator
+    namespace: common-service
+roleRef:
+  kind: ClusterRole
+  name: cp4foo-operator
+  apiGroup: rbac.authorization.k8s.io
