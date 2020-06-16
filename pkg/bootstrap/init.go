@@ -118,13 +118,14 @@ func updateConfigFromYaml(yamlContent []byte, client client.Client, reader clien
 	}
 
 	err = wait.PollImmediate(time.Second*10, time.Second*300, func() (bool, error) {
-		_, err := getObject(obj, reader)
+		operandconfigInstance, err := getObject(obj, reader)
 		if errors.IsNotFound(err) {
 			return false, nil
 		} else if err != nil {
 			return true, err
 		}
-		return true, updateObject(obj, client)
+		operandconfigInstance.Object["spec"] = obj.Object["spec"]
+		return true, updateObject(operandconfigInstance, client)
 	})
 
 	return err
